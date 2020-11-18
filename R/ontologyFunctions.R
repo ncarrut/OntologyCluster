@@ -1,4 +1,28 @@
-findCategoryOverlap <- function(membershipList, similarityCut = 0.5){
+#' Category Overlap
+#'
+#' Creates an overlap matrix from a list of category members
+#' Overlap is calculated as overlap/(size of the smaller cluster)
+#'
+#' @param membershipList Named list where each element is a category and contains a vector of protein identifiers
+#'
+#' @return Matrix of overlaps, each between 0 - 1.  Matrix names come from make.names(names(membershipList))
+#'
+#' @examples
+#' randMembershipList <- list()
+#' set.seed(10)
+#' for(i in 1:27){
+#'   proteinCount <- round(runif(min = 10, max = 150, n = 1))
+#'   randMembershipList[[i]] <- paste0("prot", round(runif(n=proteinCount, min=1, max = 100)))
+#' }
+#' randMembershipList[[28]] <- c(randMembershipList[[27]], randMembershipList[[26]])
+#' randMembershipList[[29]] <- c(randMembershipList[[28]], randMembershipList[[25]])
+#' randMembershipList[[30]] <- c(randMembershipList[[25]], randMembershipList[[27]])
+#' names(randMembershipList) <- paste0("category", 1:30)
+#'
+#' findCategoryOverlap(membershipList = randMembershipList)
+#'
+#' @export
+findCategoryOverlap <- function(membershipList){
   ## get overlap matrix
   OG<-mat.or.vec(nr=length(membershipList), nc=length(membershipList))
 
@@ -8,11 +32,44 @@ findCategoryOverlap <- function(membershipList, similarityCut = 0.5){
   rownames(OG) <- make.names(names(membershipList)); colnames(OG) <- make.names(names(membershipList))
   for (i in 1:nrow(OG)) for(j in 1:ncol(OG)){
     OG[i,j]<-length(intersect(membershipList[[i]], membershipList[[j]]))/
-      max(c(length(membershipList[[i]]), length(membershipList[[j]])))
+      min(c(length(membershipList[[i]]), length(membershipList[[j]])))
   }
   OG
 }
 
+
+#' Cluster Overlapping Categories
+#'
+#' First, decides which categories are similar enough to be clustered.  The usual similarity structure is that a few categories are almost identical and then the rest are mainly unique.  Just cluster nearly identical ones
+#'
+#' @param OG matrix of overlap
+#'
+#' @param similarityCUt minimum similarity required for clustering
+#'
+#' @return A list containing
+#'      cluster: cluster assignments,
+#'      plot: ordered plot to visualize clustering,
+#'      plotOrder: ordering for the visualization plot in case you want to try other clusterings,
+#'      overlapMatrix: the original matrix
+#'      diagnosticPlot: A diagnostic plot for the cluster/no cluster decision
+#'
+#' @examples
+#' randMembershipList <- list()
+#' set.seed(10)
+#' for(i in 1:27){
+#'   proteinCount <- round(runif(min = 10, max = 150, n = 1))
+#'   randMembershipList[[i]] <- paste0("prot", round(runif(n=proteinCount, min=1, max = 100)))
+#' }
+#' randMembershipList[[28]] <- c(randMembershipList[[27]], randMembershipList[[26]])
+#' randMembershipList[[29]] <- c(randMembershipList[[28]], randMembershipList[[25]])
+#' randMembershipList[[30]] <- c(randMembershipList[[25]], randMembershipList[[27]])
+#' names(randMembershipList) <- paste0("category", 1:30)
+#'
+#' OG <- findCategoryOverlap(membershipList = randMembershipList)
+#'
+#' clusterByOverlap(OG)
+#'
+#' @export
 clusterByOverlap <- function(OG, similarityCut = 0.5){
   ## Default to only cluster points with >50% overlap.
   ## make a diagnostic plot to see if that makes sense.
@@ -72,16 +129,39 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     scale_y_discrete(label = function(x) strtrim(x, 35))
   #theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size=6))
 
-  return(list(overlapMatrix = OG, plot = tilePlot,
-              plotOrder = ord, cluster = cluster, diagnosticPlot = diagnosticPlot))
+  return(list(cluster = cluster, plot = tilePlot, plotOrder = ord,
+              overlapMatrix = OG, diagnosticPlot = diagnosticPlot))
 }
 
 ## Summarize clustered pathways producing a table and graph of the top pathway for each cluster
 ## input is a series of vectors with essential category enrichment details
 ## clusters can come from the findCategoryOverlap function or from your favorite algorithm.
 
-summarizeCategoryClusters <- function(catID, catName, catScore, catFDR, catSize, cluster){
-  summaryTable <- data.frame(catID, catName, catScore, catFDR, catSize, cluster, stringsAsFactors = FALSE) %>%
+#' Summarize categories
+#'
+#' produce a table and a graph of the top pathway for each cluster
+#' Input is a series of vectors with essential category enrichment details
+#'
+#' @param catName vector of category names
+#'
+#' @param catScore vector of test statistics for each category
+#'
+#' @param catFDR vector of FDR corrected p-values
+#'
+#' @param catSize vector with number of proteins per category
+#'
+#' @param cluster vector indicating which cluster a category is assigned to
+#'
+#' @return A list containing
+#'      summaryTable: a table with one entry per cluster,
+#'      SummaryPlot: a bargraph with one bar per cluster,
+#'
+#' @examples
+#' none
+#'
+#' @export
+summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluster){
+  summaryTable <- data.frame(catName, catScore, catFDR, catSize, cluster, stringsAsFactors = FALSE) %>%
     group_by(cluster) %>%
     mutate(clusterSize = n()) %>%
     dplyr::arrange(catFDR, desc(abs(catScore))) %>%
