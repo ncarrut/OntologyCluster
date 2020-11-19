@@ -28,7 +28,7 @@
 #' @importFrom dplyr %>% arrange
 findCategoryOverlap <- function(membershipList){
   ## get overlap matrix
-  OG<-mat.or.vec(nr=length(membershipList), nc=length(membershipList))
+  OG <- mat.or.vec(nr=length(membershipList), nc=length(membershipList))
 
   namesMap <- make.names(names(membershipList))
   names(namesMap) <- names(membershipList)
@@ -77,6 +77,8 @@ findCategoryOverlap <- function(membershipList){
 #' @import stats
 #' @importFrom ggplot2 ggplot aes
 #' @importFrom dplyr %>% arrange filter pull
+#' @importFrom Spectrum estimate_k
+#' @importFrom kernlab specc
 clusterByOverlap <- function(OG, similarityCut = 0.5){
   cutVec <- seq(0, 1, 0.05)
   cutResVec <- c()
