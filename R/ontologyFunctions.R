@@ -122,7 +122,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     dplyr::mutate(myColNames = ordered(myColNames, levels = rownames(OG)[ord])) %>%
     ggplot2::ggplot(ggplot2::aes(x = myRowNames, y = myColNames, fill = value)) +
     ggplot2::geom_tile() +
-    ggplot2::theme(axis.text.y = element_text(size=6)) +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(size=6)) +
     ggplot2::scale_fill_gradient(name = "fraction",
                         low = "#FFFFFF",
                         high = "#012345") +
