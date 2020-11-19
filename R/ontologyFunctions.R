@@ -76,7 +76,7 @@ findCategoryOverlap <- function(membershipList){
 #' @export
 #' @import stats
 #' @importFrom ggplot2 ggplot aes
-#' @importFrom dplyr %>% arrange
+#' @importFrom dplyr %>% arrange filter pull
 clusterByOverlap <- function(OG, similarityCut = 0.5){
   cutVec <- seq(0, 1, 0.05)
   cutResVec <- c()
@@ -94,9 +94,9 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
   ## cluster using spectral clustering
   ## get K from Spectrum package
   myK <- Spectrum::estimate_k(OG[doCluster, doCluster], maxk = sum(doCluster)-1, showplots = FALSE) %>%
-    filter(K > sqrt(sum(doCluster))) %>%
-    filter(z == max(z)) %>%
-    pull(K)
+    dplyr::filter(K > sqrt(sum(doCluster))) %>%
+    dplyr::filter(z == max(z)) %>%
+    dplyr::pull(K)
 
   ## then assign clusters from specc
   ## except where similarity was too small to cluster then
