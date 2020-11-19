@@ -95,7 +95,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
 
   ## cluster using spectral clustering
   ## get K from Spectrum package
-  myK <- Spectrum::estimate_k(OG[doCluster, doCluster], maxk = sum(doCluster)-1, showplots = FALSE) %>%
+  myK <- Spectrum::estimate_k(OG[doCluster, doCluster], maxk = sum(doCluster) - 2, showplots = FALSE) %>%
     dplyr::filter(K > sqrt(sum(doCluster))) %>%
     dplyr::filter(z == max(z)) %>%
     dplyr::pull(K)
