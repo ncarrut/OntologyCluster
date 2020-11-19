@@ -87,9 +87,9 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     cutResVec[i] <- length(unique(cutree(tree = hclust(as.dist(1-OG), method = "ward.D"), h = cutVec[i])))
   }
   diagnosticPlot <- data.frame(cutVec, cutResVec) %>%
-    ggplot2::ggplot(aes(x = cutVec, y = cutResVec)) +
-    geom_point() +
-    labs(x = "Minimum similarity", y = "Clusters")
+    ggplot2::ggplot(ggplot2::aes(x = cutVec, y = cutResVec)) +
+    ggplot2::geom_point() +
+    ggplot2::labs(x = "Minimum similarity", y = "Clusters")
 
   ## decide which categories should be clustered
   doCluster <- apply(OG - diag(nrow = nrow(OG), ncol = ncol(OG)), 1, max) > similarityCut
@@ -116,20 +116,19 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
 
   #plot to visualize clusters and assess clustering
   tilePlot <- data.frame(OG) %>%
-    mutate(myRowNames = ordered(row.names(OG), levels = rownames(OG)[ord])) %>%
-    mutate(cluster = cluster) %>%
-    pivot_longer(-c(myRowNames, cluster), names_to = "myColNames") %>%
-    #mutate(myColNames = gsub("\\.", ":", myColNames)) %>% ## because data.frame replaces ":"
-    mutate(myColNames = ordered(myColNames, levels = rownames(OG)[ord])) %>%
-    ggplot2::ggplot(aes(x = myRowNames, y = myColNames, fill = value)) +
-    geom_tile() +
-    theme(axis.text.y = element_text(size=6)) +
-    scale_fill_gradient(name = "fraction",
+    dplyr::mutate(myRowNames = ordered(row.names(OG), levels = rownames(OG)[ord])) %>%
+    dplyr::mutate(cluster = cluster) %>%
+    dplyr::pivot_longer(-c(myRowNames, cluster), names_to = "myColNames") %>%
+    dplyr::mutate(myColNames = ordered(myColNames, levels = rownames(OG)[ord])) %>%
+    ggplot2::ggplot(ggplot2::aes(x = myRowNames, y = myColNames, fill = value)) +
+    ggplot2::geom_tile() +
+    ggplot2::theme(axis.text.y = element_text(size=6)) +
+    ggplot2::scale_fill_gradient(name = "fraction",
                         low = "#FFFFFF",
                         high = "#012345") +
-    labs(x = "cluster", y = "pathway") +
-    scale_x_discrete(labels = cluster[ord]) +
-    scale_y_discrete(label = function(x) strtrim(x, 35))
+    ggplot2::labs(x = "cluster", y = "pathway") +
+    ggplot2::scale_x_discrete(labels = cluster[ord]) +
+    ggplot2::scale_y_discrete(label = function(x) strtrim(x, 35))
   #theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size=6))
 
   return(list(cluster = cluster, plot = tilePlot, plotOrder = ord,
@@ -165,11 +164,11 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
 #' @importFrom dplyr %>% arrange
 summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluster){
   summaryTable <- data.frame(catName, catScore, catFDR, catSize, cluster, stringsAsFactors = FALSE) %>%
-    group_by(cluster) %>%
-    mutate(clusterSize = n()) %>%
+    dplyr::group_by(cluster) %>%
+    dplyr::mutate(clusterSize = n()) %>%
     dplyr::arrange(catFDR, desc(abs(catScore))) %>%
-    mutate(myRank = 1:n()) %>%
-    ungroup() %>%
+    dplyr::mutate(myRank = 1:n()) %>%
+    dplyr::ungroup() %>%
     dplyr::filter(myRank == 1) %>%
     dplyr::select(-myRank)
 
@@ -182,14 +181,14 @@ summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluste
   }
 
   summaryPlot <- summaryTable %>%
-    mutate(catFDR = -log10(catFDR)) %>%
-    ggplot(aes(x = reorder(catName, catScore), y = catScore, fill = catSize)) +
-    geom_col() +
-    scale_fill_gradient(low = grey(0.8), high = grey(0.2), name = "Number of \n proteins") +
-    labs(x = "", y = "Score") +
-    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) +
-    theme(axis.text.y = element_text(size = 8)) +
-    labs(y = "-log10 p-value") +
+    dplyr::mutate(catFDR = -log10(catFDR)) %>%
+    ggplot2::ggplot(ggplot2::aes(x = reorder(catName, catScore), y = catScore, fill = catSize)) +
+    ggplot2::geom_col() +
+    ggplot2::scale_fill_gradient(low = grey(0.8), high = grey(0.2), name = "Number of \n proteins") +
+    ggplot2::labs(x = "", y = "Score") +
+    ggplot2::scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) +
+    ggplot2::theme(axis.text.y = element_text(size = 8)) +
+    ggplot2::labs(y = "-log10 p-value") +
     coord_flip()
 
   return(list(table = summaryTable, plot = summaryPlot))
