@@ -92,7 +92,8 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     ggplot2::labs(x = "Minimum similarity", y = "Clusters")
 
   ## decide which categories should be clustered
-  doCluster <- apply(OG - diag(nrow = nrow(OG), ncol = ncol(OG)), 1, max) > similarityCut
+  res <- cutree(tree = hclust(as.dist(1-OG), method = "ward.D"), h = 0.5)
+  doCluster <- as.character(res) %in% names(table(res))[table(res) > 1]
 
   ## cluster using spectral clustering
   ## get K from Spectrum package
@@ -102,7 +103,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     dplyr::pull(K)
 
   ## then assign clusters from specc
-  ## except where similarity was too small to cluster then
+  ## except where distance was too great to cluster then
   ## just fill in with a sequence
   cluster1 <- kernlab::specc(OG[doCluster, doCluster], centers = myK)@.Data
   cluster <- rep(0, nrow(OG))
