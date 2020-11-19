@@ -3,3 +3,7 @@
 export(clusterByOverlap)
 export(findCategoryOverlap)
 export(summarizeCategoryClusters)
+import(Spectrum)
+import(kernlab)
+import(stats)
+import(tidyverse)

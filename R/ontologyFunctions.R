@@ -1,3 +1,9 @@
+#' @import stats
+#' @import tidyverse
+#' @import kernlab
+#' @import Spectrum
+NULL
+
 #' Category Overlap
 #'
 #' Creates an overlap matrix from a list of category members
@@ -74,9 +80,6 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
   ## Default to only cluster points with >50% overlap.
   ## make a diagnostic plot to see if that makes sense.
   ## look for a plateau around similarityCut followed by rapid drop
-
-  require(kernlab)
-  require(Spectrum)
 
   cutVec <- seq(0, 1, 0.05)
   cutResVec <- c()

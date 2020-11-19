@@ -1,12 +1,19 @@
 Package: ontologyCluster
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Cluster and Present Redundant Ontology Enrichment Results
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Nick Carruthers
+Maintainer: <carruthers@wayne.edu>
+Description: Given ontology enrichment results detect redundant categories, cluster them
+    and report the best category in each cluster.
+License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
+Imports:
+    stats,
+    utils,
+    tidyverse,
+    Spectrum,
+    kernlab
+URL: https://github.com/ncarrut/ontologyCluster
