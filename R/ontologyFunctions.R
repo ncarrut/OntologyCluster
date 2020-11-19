@@ -1,8 +1,6 @@
 #' @import stats
-#' @import tidyverse
-#' @import kernlab
-#' @import Spectrum
-#' @importFrom magrittr "%>%"
+#' @importfrom ggplot ggplot aes
+#' @importFrom dplyr %>% arrange
 NULL
 
 #' Category Overlap
