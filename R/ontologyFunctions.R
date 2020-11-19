@@ -24,6 +24,7 @@
 #' @export
 #'
 #' @import stats
+#' @importFrom ggplot2 ggplot aes
 #' @importFrom dplyr %>% arrange
 findCategoryOverlap <- function(membershipList){
   ## get overlap matrix
@@ -74,13 +75,9 @@ findCategoryOverlap <- function(membershipList){
 #'
 #' @export
 #' @import stats
-#' @importfrom ggplot2 ggplot aes
+#' @importFrom ggplot2 ggplot aes
 #' @importFrom dplyr %>% arrange
 clusterByOverlap <- function(OG, similarityCut = 0.5){
-  ## Default to only cluster points with >50% overlap.
-  ## make a diagnostic plot to see if that makes sense.
-  ## look for a plateau around similarityCut followed by rapid drop
-
   cutVec <- seq(0, 1, 0.05)
   cutResVec <- c()
   for(i in 1:length(cutVec)){
@@ -160,7 +157,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
 #'
 #' @export
 #' @import stats
-#' @importfrom ggplot2 ggplot aes
+#' @importFrom ggplot2 ggplot aes
 #' @importFrom dplyr %>% arrange
 summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluster){
   summaryTable <- data.frame(catName, catScore, catFDR, catSize, cluster, stringsAsFactors = FALSE) %>%
