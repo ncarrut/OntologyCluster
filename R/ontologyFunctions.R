@@ -2,6 +2,7 @@
 #' @import tidyverse
 #' @import kernlab
 #' @import Spectrum
+#' @importFrom magrittr "%>%"
 NULL
 
 #' Category Overlap
@@ -104,7 +105,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
   ## then assign clusters from specc
   ## except where similarity was too small to cluster then
   ## just fill in with a sequence
-  cluster1 <- specc(OG[doCluster, doCluster], centers = myK)@.Data
+  cluster1 <- kernlab::specc(OG[doCluster, doCluster], centers = myK)@.Data
   cluster <- rep(0, nrow(OG))
   names(cluster) = rownames(OG)
   cluster[doCluster] <- cluster1
