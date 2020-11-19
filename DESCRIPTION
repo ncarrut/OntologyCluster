@@ -13,7 +13,8 @@ RoxygenNote: 7.1.0
 Imports:
     stats,
     utils,
-    tidyverse,
+    ggplot2,
+    dplyr,
     Spectrum,
     kernlab
 URL: https://github.com/ncarrut/ontologyCluster

@@ -1,8 +1,3 @@
-#' @import stats
-#' @importfrom ggplot ggplot aes
-#' @importFrom dplyr %>% arrange
-NULL
-
 #' Category Overlap
 #'
 #' Creates an overlap matrix from a list of category members
@@ -27,6 +22,9 @@ NULL
 #' findCategoryOverlap(membershipList = randMembershipList)
 #'
 #' @export
+#'
+#' @import stats
+#' @importFrom dplyr %>% arrange
 findCategoryOverlap <- function(membershipList){
   ## get overlap matrix
   OG<-mat.or.vec(nr=length(membershipList), nc=length(membershipList))
@@ -75,6 +73,9 @@ findCategoryOverlap <- function(membershipList){
 #' clusterByOverlap(OG)
 #'
 #' @export
+#' @import stats
+#' @importfrom ggplot2 ggplot aes
+#' @importFrom dplyr %>% arrange
 clusterByOverlap <- function(OG, similarityCut = 0.5){
   ## Default to only cluster points with >50% overlap.
   ## make a diagnostic plot to see if that makes sense.
@@ -162,6 +163,9 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
 #' none
 #'
 #' @export
+#' @import stats
+#' @importfrom ggplot2 ggplot aes
+#' @importFrom dplyr %>% arrange
 summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluster){
   summaryTable <- data.frame(catName, catScore, catFDR, catSize, cluster, stringsAsFactors = FALSE) %>%
     group_by(cluster) %>%
