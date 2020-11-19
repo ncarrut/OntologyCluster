@@ -87,7 +87,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     cutResVec[i] <- length(unique(cutree(tree = hclust(as.dist(1-OG), method = "ward.D"), h = cutVec[i])))
   }
   diagnosticPlot <- data.frame(cutVec, cutResVec) %>%
-    ggplot(aes(x = cutVec, y = cutResVec)) +
+    ggplot2::ggplot(aes(x = cutVec, y = cutResVec)) +
     geom_point() +
     labs(x = "Minimum similarity", y = "Clusters")
 
@@ -121,7 +121,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     pivot_longer(-c(myRowNames, cluster), names_to = "myColNames") %>%
     #mutate(myColNames = gsub("\\.", ":", myColNames)) %>% ## because data.frame replaces ":"
     mutate(myColNames = ordered(myColNames, levels = rownames(OG)[ord])) %>%
-    ggplot(aes(x = myRowNames, y = myColNames, fill = value)) +
+    ggplot2::ggplot(aes(x = myRowNames, y = myColNames, fill = value)) +
     geom_tile() +
     theme(axis.text.y = element_text(size=6)) +
     scale_fill_gradient(name = "fraction",
@@ -136,9 +136,6 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
               overlapMatrix = OG, diagnosticPlot = diagnosticPlot))
 }
 
-## Summarize clustered pathways producing a table and graph of the top pathway for each cluster
-## input is a series of vectors with essential category enrichment details
-## clusters can come from the findCategoryOverlap function or from your favorite algorithm.
 
 #' Summarize categories
 #'
