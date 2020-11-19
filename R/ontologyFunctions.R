@@ -77,6 +77,7 @@ findCategoryOverlap <- function(membershipList){
 #' @import stats
 #' @importFrom ggplot2 ggplot aes
 #' @importFrom dplyr %>% arrange filter pull
+#' @importFrom tidyr pivot_longer
 #' @importFrom Spectrum estimate_k
 #' @importFrom kernlab specc
 clusterByOverlap <- function(OG, similarityCut = 0.5){
@@ -117,7 +118,7 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
   tilePlot <- data.frame(OG) %>%
     dplyr::mutate(myRowNames = ordered(row.names(OG), levels = rownames(OG)[ord])) %>%
     dplyr::mutate(cluster = cluster) %>%
-    dplyr::pivot_longer(-c(myRowNames, cluster), names_to = "myColNames") %>%
+    tidyr::pivot_longer(-c(myRowNames, cluster), names_to = "myColNames") %>%
     dplyr::mutate(myColNames = ordered(myColNames, levels = rownames(OG)[ord])) %>%
     ggplot2::ggplot(ggplot2::aes(x = myRowNames, y = myColNames, fill = value)) +
     ggplot2::geom_tile() +
