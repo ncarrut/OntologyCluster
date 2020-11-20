@@ -4,12 +4,14 @@
 \alias{clusterByOverlap}
 \title{Cluster Overlapping Categories}
 \usage{
-clusterByOverlap(OG, similarityCut = 0.5)
+clusterByOverlap(OG, similarityCut = 0.5, clusteringMethod = "hierarchical")
 }
 \arguments{
 \item{OG}{matrix of overlap}
 
 \item{similarityCUt}{minimum similarity required for clustering}
+
+\item{method}{a string, either "hierarchical" or "spectral" to indicate clustering method.}
 }
 \value{
 A list containing

@@ -50,6 +50,8 @@ findCategoryOverlap <- function(membershipList){
 #'
 #' @param similarityCUt minimum similarity required for clustering
 #'
+#' @param method a string, either "hierarchical" or "spectral" to indicate clustering method.
+#'
 #' @return A list containing
 #'      cluster: cluster assignments,
 #'      plot: ordered plot to visualize clustering,
@@ -80,7 +82,7 @@ findCategoryOverlap <- function(membershipList){
 #' @importFrom tidyr pivot_longer
 #' @importFrom Spectrum estimate_k
 #' @importFrom kernlab specc
-clusterByOverlap <- function(OG, similarityCut = 0.5){
+clusterByOverlap <- function(OG, similarityCut = 0.5, clusteringMethod = "hierarchical"){
   cutVec <- seq(0, 1, 0.05)
   cutResVec <- c()
   for(i in 1:length(cutVec)){
@@ -92,24 +94,33 @@ clusterByOverlap <- function(OG, similarityCut = 0.5){
     ggplot2::labs(x = "Minimum similarity", y = "Clusters")
 
   ## decide which categories should be clustered
-  res <- cutree(tree = hclust(as.dist(1-OG), method = "ward.D"), h = 0.5)
-  doCluster <- as.character(res) %in% names(table(res))[table(res) > 1]
+  hcRes <- cutree(tree = hclust(as.dist(1-OG), method = "ward.D"), h = similarityCut)
+  doCluster <- as.character(hcRes) %in% names(table(hcRes))[table(hcRes) > 1]
 
-  ## cluster using spectral clustering
-  ## get K from Spectrum package
-  myK <- Spectrum::estimate_k(OG[doCluster, doCluster], maxk = sum(doCluster) - 2, showplots = FALSE) %>%
-    dplyr::filter(K > sqrt(sum(doCluster))) %>%
-    dplyr::filter(z == max(z)) %>%
-    dplyr::pull(K)
+  if(clusteringMethod == "spectral"){
+    ## cluster using spectral clustering
+    ## get K from Spectrum package
+    myK <- Spectrum::estimate_k(OG[doCluster, doCluster], maxk = sum(doCluster) - 2, showplots = FALSE) %>%
+      dplyr::filter(K > sqrt(sum(doCluster))) %>%
+      dplyr::filter(z == max(z)) %>%
+      dplyr::pull(K)
 
-  ## then assign clusters from specc
-  ## except where distance was too great to cluster then
-  ## just fill in with a sequence
-  cluster1 <- kernlab::specc(OG[doCluster, doCluster], centers = myK)@.Data
-  cluster <- rep(0, nrow(OG))
-  names(cluster) = rownames(OG)
-  cluster[doCluster] <- cluster1
-  cluster[!doCluster] <- seq(from = myK+1, to = myK+sum(cluster==0), by = 1)
+    ## then assign clusters from specc
+    ## except where distance was too great to cluster then
+    ## just fill in with a sequence
+    cluster1 <- kernlab::specc(OG[doCluster, doCluster], centers = myK)@.Data
+    cluster <- rep(0, nrow(OG))
+    names(cluster) = rownames(OG)
+    cluster[doCluster] <- cluster1
+    cluster[!doCluster] <- seq(from = myK+1, to = myK+sum(cluster==0), by = 1)
+  }
+
+  if(clusteringMethod == "hierarchical"){
+    cluster <- rep(0, nrow(OG))
+    names(cluster) = rownames(OG)
+    cluster[doCluster] <- hcRes[doCluster]
+    cluster[!doCluster] <- seq(from = max(cluster) + 1, to = max(cluster) + sum(!doCluster), by = 1)
+  }
 
   ## order according to euclidean distance.  This is for plotting and
   ## will be returned to help with evaluating other clustering methods if needed
