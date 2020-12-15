@@ -42,9 +42,9 @@ summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluste
 
   summaryPlot <- summaryTable %>%
     dplyr::mutate(catFDR = -log10(catFDR)) %>%
-    ggplot2::ggplot(ggplot2::aes(x = reorder(catName, catScore), y = catScore, fill = catSize)) +
+    ggplot2::ggplot(ggplot2::aes(x = reorder(catName, catFDR), y = catFDR, fill = catScore)) +
     ggplot2::geom_col() +
-    ggplot2::scale_fill_gradient(low = grey(0.8), high = grey(0.2), name = "Number of \n proteins") +
+    ggplot2::scale_fill_gradient(low = grey(0.8), high = grey(0.2), name = "Mean t-statistic") +
     ggplot2::labs(x = "", y = "Score") +
     ggplot2::scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) +
     ggplot2::theme(axis.text.y = element_text(size = 8)) +
