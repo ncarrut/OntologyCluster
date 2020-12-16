@@ -48,7 +48,7 @@ summarizeCategoryClusters <- function(catName, catScore, catFDR, catSize, cluste
     ggplot2::labs(x = "", y = "Score") +
     ggplot2::scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) +
     ggplot2::theme(axis.text.y = element_text(size = 8)) +
-    ggplot2::labs(y = "-log10 p-value") +
+    ggplot2::labs(y = "Mean t-statistic") +
     coord_flip()
 
   return(list(table = summaryTable, plot = summaryPlot))
